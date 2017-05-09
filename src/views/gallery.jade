@@ -1,0 +1,75 @@
+extends ./base.jade
+block append style
+    link(rel="stylesheet", type="text/css", href="/assets/style.css")
+block body
+  nav
+    a(href="/login")
+      img#logo(src="/assets/img/face.png", alt="face logo")
+    .navlink
+      a(href="/logout") Log out
+    .navlink
+      a(href="/gallery") Make a Shoe Gallery
+    .navlink
+      a(href="/graphic") Go to your Graphic
+  //section#makeGallery
+  div.formDiv
+    p.scanInstructions Enter all information for your shoe, then click Scan Shoe to create a collection entry.
+    form#galleryForm(class="galleryForm", name="galleryForm", action="/gallery", method="POST")
+      div.formLine
+        label(for="name" class="labelClass") Shoe Name: 
+        input#shoeName(type="text", name="shoeName", placeholder="Shoe Nickname", class="inputClass")
+      div.formLine
+        label(for="brand" class="labelClass") Brand: 
+        select#brandInput(name="brand" class="inputClass")
+          option(value='nike') Nike
+          option(value='adidas') Adidas
+          option(value='jordan') Jordans
+      div.formLine
+        label(for="color" class="labelClass") Color: 
+        select#colorInput(name="color" class="inputClass")
+          option(value='red') Red
+          option(value='orange') Orange
+          option(value='yellow') Yellow
+          option(value='green') Green
+          option(value='blue') Blue
+          option(value='black') Black
+          option(value='white') White
+      div.formLine
+        label(for="styleSize" class="labelClass") Style:
+        select#styleInput(name="style" class="inputClass")
+          option(value='low') Low
+          option(value='mid') Mid
+          option(value='high') High
+      div.formLine
+        label(for="yearReleased" class="labelClass") Year Released (XXXX):
+        input#yearInput(type="text", name="year", placeholder="Year Released", class="inputClass")
+      button#shoeScan(href="#" class="scanButton") Scan Shoe
+      div#statusColor.scanStatus-Red
+        label(for="status", class="scanLabel") Scan Status:
+        input#status(type="text", name="status", value="Inactive", readOnly="true", class="statusDisplay")
+  //section#showGallery
+  div.galleryDiv
+    if !shoes || shoes.length == 0
+      div.shoesContainer
+        h3.emptyDomo No Galleries Yet
+    else
+      div.shoesContainer
+        each val in shoes
+          div.singleShoe
+            h3.shoeName #{val.name}
+            img(src="/captures/" + "#{val.name}" + "/image1.jpg", width="180", height="120")
+            div.brandColor
+              h4.shoeBrand Brand: #{val.brand}
+              h4.shoeColor Color: #{val.color}
+            div.styleYear
+              h4.shoeStyle Style: #{val.styleSize}
+              h4.shoeYear Year: #{val.yearReleased}
+            //- - for(var i=1;i<5;i++)
+            //-   div.shoePic
+  #domoMessage
+    img#speech(src="/assets/img/speech.png", alt="speech box")
+    h3
+      span#errorMessage
+    img#domo(src="assets/img/domo.png", alt="domo")
+block scripts
+        script(src="/assets/gallery.js")

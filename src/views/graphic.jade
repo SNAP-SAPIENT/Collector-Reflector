@@ -1,0 +1,18 @@
+extends ./base.jade
+block append style
+    link(rel="stylesheet", type="text/css", href="/assets/style.css")
+block body
+  nav
+    a(href="/login")
+      img#logo(src="/assets/img/face.png", alt="face logo")
+    .navlink
+      a(href="/logout") Log out
+    .navlink
+      a(href="/gallery") Make a Shoe Gallery
+    .navlink
+      a(href="/graphic") Go to your Graphic
+  section
+    canvas(width='640', height='480')
+    button#butt1 Click Me
+block scripts
+    script(src="/assets/graphic.js")

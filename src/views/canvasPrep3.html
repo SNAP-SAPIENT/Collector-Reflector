@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html>
+  <body>
+    <!--take a random image and make sure i can plot it where I want-->
+
+    <script id = "init1">
+
+      'use strict';
+      //button click -- not onload -- this is just a placeholder now
+      //window.onload = init;
+      // init canvas
+      window.onload = function() {
+        var butt2 = document.getElementById("butt1");
+        butt2.onclick = function(){init();};
+      };
+
+      var ctx;
+      //take in shoe variables from Derek
+      var s_color = "red";    //shoes.color
+      var s_size = "high";    //shoes.size
+      var s_brand = "nike";   //shoes.brand
+      var s_year = 2008;      //shoes.year
+      var maxRadius = 200;
+      var brandLogos = [];
+      var origin = { x: 320, y: 240 };
+
+      function getAngle(shoe_color){
+          //var colorMap = {};
+          var colors = {
+            red: 1,
+            orange: 2,
+            yellow: 3,
+            green: 4,
+            blue: 5,
+            black: 6,
+            white: 7
+          };
+          var angle = 360/(Object.keys(colors).length);
+          var posAngle = 0;
+
+          switch (shoe_color){
+            case "red":
+              posAngle = angle * colors.red;
+              break;
+            case "orange":
+              posAngle = angle * colors.orange;
+              break;
+            case "yellow":
+              posAngle = angle * colors.yellow;
+              break;
+            case "green":
+              posAngle = angle * colors.green;
+              break;
+            case "blue":
+              posAngle = angle * colors.blue;
+              break;
+            case "black":
+              posAngle = angle * colors.black;
+              break;
+            case "white":
+              posAngle = angle * colors.white;
+              break;
+            default:
+              break;
+          }
+          posAngle = posAngle * (Math.PI / 180);
+
+          return posAngle;
+      }
+
+      function calcRatio(){
+        var recentYear = 2016;    //derek to provide most recent purchase year in this color
+        var initYear = 2000;      //derek to provide initial year of purchase in this color
+        var shoeYear = s_year;    //derek to provide year of shoe being plotted
+
+        if (shoeYear < initYear){
+          alert("you can't have bought that shoe then");
+          return;
+        }
+
+        var numerator = shoeYear - initYear;
+        var denominator = recentYear - initYear;
+        var yearRatio = numerator/denominator;
+
+        return yearRatio;
+      }
+
+      //200cos(angle) = x
+      function findX(newHypo, newAng){
+        var angleDeg = Math.cos(newAng);
+        var xVal = newHypo * angleDeg;
+
+        //acc to which quadrant of canvas point is in, translate by correct amount so origin in center of canvas, not top left
+        if (angleDeg < (Math.PI / 2) || (angleDeg >= (3 * (Math.PI / 2)) && angleDeg < (2 * Math.PI))) {
+          xVal = origin.x - xVal;
+        }
+        else if ((angleDeg >= (Math.PI / 2) && angleDeg < Math.PI) || (angleDeg >= Math.PI && angleDeg < (3 * (Math.PI / 2)))) {
+          xVal = origin.x + xVal;
+        }
+        //console.log("X: " + xVal);
+        return xVal;
+      }
+
+      //200sin(angle) = y
+      function findY(newHypo, newAng){
+        var angleDeg = Math.sin(newAng);
+        var yVal = newHypo * angleDeg;
+
+        if ((angleDeg < (Math.PI / 2)) || (angleDeg >= (Math.PI / 2) && angleDeg < Math.PI)) {
+          yVal = origin.y - yVal;
+        }
+        else if ((angleDeg >= Math.PI && angleDeg < (3 * (Math.PI / 2))) || (angleDeg >= (3 * (Math.PI / 2)) && angleDeg < (2 * Math.PI))) {
+          yVal = origin.y + yVal;
+        }
+        //console.log("Y: " + yVal);
+        return yVal;
+      }
+
+      function positionGraphic(color){
+        var drawAngle = getAngle(color); // this shit is in radians
+        var hypoteneus = calcRatio() * maxRadius;
+
+        //console.log(drawAngle);
+        var xPos = findX(hypoteneus, drawAngle);
+        var yPos = findY(hypoteneus, drawAngle);
+
+        return { x: xPos, y: yPos };
+
+      }
+
+      //returns correct image logo based on brand input
+      function chooseBrand(brand){
+        var img = new Image();
+        if (brand === "nike"){
+          img.src = "/assets/img/swoosh.jpg";
+        }
+        else if (brand === "adidas"){
+          img.src = "/assets/img/adilogo.jpg";
+        }
+        else {
+          img.src = "/assets/img/jordan.jpg";
+        }
+        return img;
+      }
+
+      //resizes logo based on input
+      function sizeGraphic(size){
+        var scaleFactor = 0;
+
+        if (size === "high"){
+          scaleFactor = 50;
+        }
+        else if (size === "mid"){
+          scaleFactor = 30;
+        }
+        else {
+          scaleFactor = 10;
+        }
+
+        return scaleFactor;
+      }
+
+
+      function init(){
+          console.log('init called');
+          var canvas = document.querySelector("canvas");
+          ctx = canvas.getContext("2d");
+          ctx.fillStyle = "#e5e5e5";
+          ctx.fillRect(0,0,640,480);
+
+          //for (var i = 0; i < data.length; i++) {
+          //  var position = positionGraphic(data[i].color);
+          //  var image = chooseBrand(data[i].brand);
+          //  var finSize = sizeGraphic(data[i].size);
+
+          //  image.onload = function() {
+          //    ctx.drawImage(image, position.x, position.y, finSize, finSize);
+          //  };
+          //}
+
+           var position = positionGraphic(s_color);
+           var image = chooseBrand(s_brand);
+           var finSize = sizeGraphic(s_size);
+          
+           image.onload = function() {
+             ctx.drawImage(image, position.x, position.y, finSize, finSize);
+           };
+      }
+
+    </script>
+
+    <!--  <img id = "Swoosh" src="swoosh.jpg" alt="Nike swoosh" width="200" height="72"> -->
+    <canvas width="640" height="480"></canvas>
+    <button id = "butt1" onclick="init()"> Click Me </button>
+  </body>
+</html>
